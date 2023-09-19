@@ -1,5 +1,4 @@
 ## API Deployed on
-[![API Deployed on Aircode](https://aircode.io/dashboard/iv46zu?file=auth/login.js)]
 https://aircode.io/dashboard/iv46zu?file=auth/login.js
 
 ## One-Click Deployment
