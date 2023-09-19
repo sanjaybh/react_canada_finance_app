@@ -1,3 +1,7 @@
+## API Deployed on
+[![API Deployed on Aircode](https://aircode.io/dashboard/iv46zu?file=auth/login.js)]
+https://aircode.io/dashboard/iv46zu?file=auth/login.js
+
 ## One-Click Deployment
 
 Easily get a copy and launch your app on [AirCode](https://aircode.io/) by clicking the button below.
