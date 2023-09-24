@@ -25,6 +25,7 @@ module.exports = async function (params, context) {
       context.status(200);
       return {
         "success": true,
+        'message': 'Record updated successfully.',
         ...user
       }
     }catch(err) {

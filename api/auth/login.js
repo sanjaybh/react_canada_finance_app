@@ -6,10 +6,10 @@ require('dotenv').config;
 
 module.exports = async function (params, context) {
   const {email, password} = params;
-
+  
   if(!email || !password) {
     context.status(400);
-    return {"success": true,"message" : "All fields are mandatory"};
+    return {"success": false,"message" : "All fields are mandatory"};
   }
 
   const userTable = aircode.db.table('user');
@@ -20,7 +20,7 @@ module.exports = async function (params, context) {
 
   if(!user) {
     context.status(401);
-    return {"success": true,"message": "email or password is not valid"};
+    return {"success": false,"message": "Authentication failed, email or password is not valid"};
   }
 
   const matchPassword = await bcrypt.compare(password, user.password);
@@ -41,7 +41,7 @@ module.exports = async function (params, context) {
     
     //remove few fields from current user
     delete currentUser._id;
-    delete currentUser.isAdmin;
+    //delete currentUser.isAdmin;
     delete currentUser.password;
     delete currentUser.createdAt;
     delete currentUser.updatedAt;
@@ -52,6 +52,6 @@ module.exports = async function (params, context) {
     }
   }else {
     context.status(401);
-    return {"success": false, "message": "email or password is not valid"};
+    return {"success": false, "message": "Authentication failed, email or password is not valid"};
   }
 };

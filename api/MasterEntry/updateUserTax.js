@@ -7,16 +7,18 @@ module.exports = async function (params, context) {
   //console.log(tokenUser);
   if(tokenUser != null) {
     const { _id } = tokenUser;
-    const {disabled} = params;
-        
-    const userTable = aircode.db.table('user');    
+    const {taxPerYr, conversionRate, salaryPerYr} = params;
+    
+    const userTable = aircode.db.table('userTax');    
     const user = await userTable
-    .where({_id})
-    .projection({isAdmin: 0, email:0, password:0, accessToken : 0, createdAt:0, updatedAt:0, _id:0})
+    .where({"masterUsr_id":_id})
+    .projection({createdAt:0, updatedAt:0})
     .findOne();
     
-    //email should not be allowed to change, make it readonly from UI
-    user.disabled = disabled || user.disabled;
+    //change the entered values, set db fields
+    user.taxPerYr = taxPerYr || user.taxPerYr;
+    user.conversionRate = conversionRate || user.conversionRate;
+    user.salaryPerYr = salaryPerYr || user.salaryPerYr;
     
     try {
       await userTable.save(user);
