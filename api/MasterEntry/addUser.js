@@ -21,7 +21,7 @@ module.exports = async function (params, context) {
     context.status(400);
     return {
       "success": false,
-      "message": `Match password length [${passwordLen} char is must]`
+      "message": `Match password length, [${passwordLen} char is must]`
     }
   }
   
