@@ -21,7 +21,7 @@ module.exports = async function (params, context) {
     const rentExpensesTable = aircode.db.table('rentExpenses');    
     const userRentExp = await rentExpensesTable
     .where({masterUsr_id})
-    //.projection({isAdmin: 0})
+    .projection({masterUsr_id:0, createdAt : 0, updatedAt : 0})
     .findOne();
 
     userRentExp.roomRent = roomRent || userRentExp.roomRent;
@@ -36,7 +36,8 @@ module.exports = async function (params, context) {
       context.status(200);
       return {
         "success": true,
-        ...userRentExp
+        "message": "Record Updated",
+        "data": {...userRentExp}
       }
     }catch(err) {
       context.status(500);

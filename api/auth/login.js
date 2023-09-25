@@ -16,6 +16,7 @@ module.exports = async function (params, context) {
 
   const user = await userTable
   .where({email})
+  .projection({createdAt:0, updatedAt:0})
   .findOne();
 
   if(!user) {
@@ -41,10 +42,7 @@ module.exports = async function (params, context) {
     
     //remove few fields from current user
     delete currentUser._id;
-    //delete currentUser.isAdmin;
     delete currentUser.password;
-    delete currentUser.createdAt;
-    delete currentUser.updatedAt;
     
     return {
       "success": true,

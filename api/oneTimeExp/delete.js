@@ -4,7 +4,6 @@ const { verifyToken } = require('../helper/verifyToken');
 
 module.exports = async function (params, context) {
   const tokenUser = await verifyToken(context);
-  //console.log(tokenUser);
   
   if(tokenUser != null) {
     //const { _id } = tokenUser;
@@ -20,7 +19,7 @@ module.exports = async function (params, context) {
       context.status(204);
       return {
         "success": true,
-        "result": [], "message": "Record deleted"
+        "data": [], "message": "Record deleted"
       }
     }catch(err) {
       context.status(500);

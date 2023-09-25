@@ -20,7 +20,7 @@ module.exports = async function (params, context) {
     const oneTimeTable = aircode.db.table('oneTimeExp');    
     const oneTimeExp = await oneTimeTable
     .where({_id})
-    //.projection({accessToken : 0})
+    .projection({masterUsr_id:0, createdAt : 0, updatedAt : 0})
     .findOne();
     
     //Update 
@@ -32,7 +32,8 @@ module.exports = async function (params, context) {
       context.status(200);
       return {
         "success": true,
-        ...oneTimeExp
+        "message": "Record updated",
+        "data": {...oneTimeExp}
       }
     }catch(err) {
       context.status(500);

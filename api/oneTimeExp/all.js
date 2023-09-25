@@ -4,23 +4,28 @@ const { verifyToken } = require('../helper/verifyToken');
 
 module.exports = async function (params, context) {
   const tokenUser = await verifyToken(context);
-
-  if(tokenUser != null) {
   
+  if(tokenUser != null) {  
+    const { _id } = tokenUser;
+    
     const oneTimeTable = aircode.db.table('oneTimeExp');
     
-    const products = await oneTimeTable
-    .where({masterUsr_id: tokenUser._id})
+    const itemList = await oneTimeTable
+    .where({masterUsr_id: _id})
+    .projection({masterUsr_id:0, createdAt : 0, updatedAt:0})
     .find();
   
     const count = await oneTimeTable
-    .where()
+    .where({masterUsr_id: _id})
     .count();
-  
+
+    //Delete few items
+    //delete itemList.val
+    
     return {
       "success": true,
-      count,
-      products
+      "count": count,
+      "data": itemList
     }
   } else {
     context.status(401);

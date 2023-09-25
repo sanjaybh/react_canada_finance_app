@@ -4,14 +4,16 @@ const { verifyToken } = require('../helper/verifyToken');
 
 module.exports = async function (params, context) {
   const tokenUser = await verifyToken(context);
+  
   if(tokenUser != null) {
+    const { _id } = tokenUser;
     const { item, price } = params;
 
     if(!item || !price) {
       context.status(400);
       return {
         "success": true,
-        'message': 'Product Name, amount are mandatory'
+        'message': 'Item Name, Price are mandatory'
       }
     }
     
@@ -20,19 +22,25 @@ module.exports = async function (params, context) {
     try {
       const cart = {
         ...params,
-        masterUsr_id: tokenUser._id
+        masterUsr_id: _id
       }
       const result = await oneTimeExpTable.save(cart);
       context.status(201);
+      
+      delete result.createdAt
+      delete result.updatedAt
+      delete result.masterUsr_id
+      
       return {
         "success": true,
-        result
+        'message': 'Item added successfully',
+        "data":result
       }
     }catch (err) {
       context.status(500);
       return {
         "success": false,
-        'message': err.message
+        "message": err.message
       }
     }
   } else {

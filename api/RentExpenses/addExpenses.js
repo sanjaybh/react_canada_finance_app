@@ -35,9 +35,14 @@ module.exports = async function (params, context) {
     await userTable.save(newUser);
     
     context.status(200);
+
+    //Delete Item
+    delete newUser.masterUsr_id
+    
     return {
       "success": true, 
-      "message": "Record added"
+      "message": "Record added",
+      "data": newUser
     };
   }else {
     context.status(401);
