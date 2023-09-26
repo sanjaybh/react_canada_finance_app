@@ -17,7 +17,7 @@ module.exports = async function (params, context) {
     if(!roomRent || !electricity) {
       context.status(400);
       return {
-        "success": true,
+        "success": false,
         "message": "All fields are mandatory"
       }
     }
@@ -29,7 +29,7 @@ module.exports = async function (params, context) {
   
     if(userExist){
       context.status(409);
-      return {"success": true, "message": "Record already exist"}
+      return {"success": false, "message": "Record already exist"}
     }
     const newUser = {masterUsr_id, roomRent, hydro, water, electricity, wifi, laundry };
     await userTable.save(newUser);
@@ -47,7 +47,7 @@ module.exports = async function (params, context) {
   }else {
     context.status(401);
     return {
-      "success": true,
+      "success": false,
       'message': 'Token invalid or user is not authorized'
     }
   }

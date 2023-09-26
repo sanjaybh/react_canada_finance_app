@@ -27,7 +27,7 @@ module.exports = async function (params, context) {
       }else{
         context.status(404);
         return {
-          "success": true,
+          "success": false,
           "message":"Record not found"
         }
       }
@@ -35,14 +35,14 @@ module.exports = async function (params, context) {
     }catch(err) {
       context.status(500);
       return {
-        "success": true,
+        "success": false,
         'message': "Error - "+err.message
       }
     } 
   } else {
     context.status(401);
     return {
-      "success": true,
+      "success": false,
       'message': 'Token invalid or user is not authorized'
     }
   } 

@@ -9,7 +9,7 @@ module.exports = async function (params, context) {
     const { _id } = tokenUser;
     const { disabled } = params;
 
-    console.log("disabled - "+disabled)
+    //console.log("disabled - "+disabled)
     // if(!disabled) {
     //   context.status(400);
     //   return {
