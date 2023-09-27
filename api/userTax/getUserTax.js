@@ -13,7 +13,7 @@ module.exports = async function (params, context) {
     const record = await userTaxTable
     .where({masterUsr_id: _id})
     .projection({masterUsr_id:0, createdAt:0, updatedAt:0})
-    .find();
+    .findOne();
     //console.log("Count - "+JSON.stringify(record))
     
     const count = await userTaxTable
@@ -25,7 +25,7 @@ module.exports = async function (params, context) {
       "success": true,
       "message": "",
       "count": count,
-      "data": record[0]
+      "data": record
     }
   } else {
     context.status(401);

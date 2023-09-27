@@ -18,7 +18,7 @@ module.exports = async function (params, context) {
     context.status(200);
     return {
       "success": true,
-      "message": "Record found",
+      "message": "",
       "data": record
     }
   } else {

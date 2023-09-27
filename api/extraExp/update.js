@@ -7,13 +7,13 @@ module.exports = async function (params, context) {
   //console.log(tokenUser);
   if(tokenUser != null) {
     //const { _id } = tokenUser;
-    const { _id, item, price } = params;
+    const { _id, item, price, type } = params;
 
-    if(!item || !price) {
+    if(!item || !price || !type) {
       context.status(400);
       return {
         "success": false,
-        'message': 'Product Name, amount are mandatory'
+        'message': 'All fields are mandatory'
       }
     }
     
