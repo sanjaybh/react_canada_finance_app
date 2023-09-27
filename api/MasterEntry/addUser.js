@@ -21,7 +21,7 @@ module.exports = async function (params, context) {
     context.status(400);
     return {
       "success": false,
-      "message": `Match password length [${passwordLen} char is must]`
+      "message": `Match password length, [${passwordLen} char is must]`
     }
   }
   
@@ -33,11 +33,11 @@ module.exports = async function (params, context) {
 
   if(userExist){
     context.status(409);
-    return {"success": true, "message": "User already exist"}
+    return {"success": false, "message": "User already exist"}
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const newUser = {name, email, "password": hashedPassword, "isAdmin": false, phone, address};  
+  const newUser = {name, email, "password": hashedPassword, "isAdmin": false, phone, address, "disabled": false};  
   await userTable.save(newUser);
   context.status(200);
   return {"success": true, "message": "Record added"};

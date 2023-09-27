@@ -11,6 +11,7 @@ module.exports = async function (params, context) {
   if(!_id) {
     context.status(400);
     return {
+      "success": false, 
       "message": "Insufficient parameters"
     }
   }
@@ -21,22 +22,17 @@ module.exports = async function (params, context) {
 
   const userRentExp = await aircode.db.table('rentExpenses')
     .where({masterUsr_id: _id})
-    .projection({ masterUsr_id:0, createdAt:0, updatedAt:0 })
+    .projection({ masterUsr_id:0, accessToken:0, createdAt:0, updatedAt:0 })
     .find()
 
   const userTaxExp = await aircode.db.table('userTax')
     .where({masterUsr_id: _id})
-    .projection({ masterUsr_id:0, createdAt:0, updatedAt:0 })
-    .find()
-
-  const oneTimeExp = await aircode.db.table('oneTimeExp')
-    .where({masterUsr_id: _id})
-    .projection({ masterUsr_id:0, createdAt:0, updatedAt:0 })
+    .projection({ masterUsr_id:0, accessToken:0, createdAt:0, updatedAt:0 })
     .find()
 
   const extraExp = await aircode.db.table('extraExp')
     .where({masterUsr_id: _id})
-    .projection({ masterUsr_id:0, createdAt:0, updatedAt:0 })
+    .projection({ masterUsr_id:0, accessToken:0, createdAt:0, updatedAt:0 })
     .find()
   
   // const userIdsList = await findIdsFromUserList(includeResult).then((data) => {    
@@ -44,7 +40,9 @@ module.exports = async function (params, context) {
   // }) 
  
   return {
-    "success": true, masterUser, userRentExp, userTaxExp, oneTimeExp, extraExp
+    "success": true, 
+    "data" : {masterUser, userRentExp, userTaxExp, extraExp},
+    'message': 'User all data'
   };
   } else {
     context.status(401);

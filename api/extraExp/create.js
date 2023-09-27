@@ -5,13 +5,14 @@ const { verifyToken } = require('../helper/verifyToken');
 module.exports = async function (params, context) {
   const tokenUser = await verifyToken(context);
   if(tokenUser != null) {
-    const { item, price } = params;
+    //Type of exp [ONETIME/EXTRAEXP]
+    const { item, price, type } = params;
 
-    if(!item || !price) {
+    if(!item || !price || !type) {
       context.status(400);
       return {
         "success": true,
-        'message': 'Product Name, amount are mandatory'
+        'message': 'All fields are mandatory'
       }
     }
     
@@ -24,9 +25,14 @@ module.exports = async function (params, context) {
       }
       const result = await oneTimeExpTable.save(cart);
       context.status(201);
+
+      //delete items
+      delete result.createdAt
+      delete result.updatedAt
+      delete result.masterUsr_id
       return {
         "success": true,
-        "result": result, "message":"Record added"
+        "data": result, "message":"Record added"
       }
     }catch (err) {
       context.status(500);

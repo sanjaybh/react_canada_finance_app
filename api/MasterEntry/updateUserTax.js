@@ -6,34 +6,27 @@ module.exports = async function (params, context) {
   const tokenUser = await verifyToken(context);
   //console.log(tokenUser);
   if(tokenUser != null) {
-    //const { _id } = tokenUser;
-    const { _id, item, price } = params;
-
-    if(!item || !price) {
-      context.status(400);
-      return {
-        "success": false,
-        'message': 'Product Name, amount are mandatory'
-      }
-    }
+    const { _id } = tokenUser;
+    const {taxPerYr, conversionRate, salaryPerYr} = params;
     
-    const oneTimeTable = aircode.db.table('oneTimeExp');    
-    const oneTimeExp = await oneTimeTable
-    .where({_id})
-    .projection({masterUsr_id:0, createdAt : 0, updatedAt : 0})
+    const userTable = aircode.db.table('userTax');    
+    const user = await userTable
+    .where({"masterUsr_id":_id})
+    .projection({createdAt:0, updatedAt:0})
     .findOne();
     
-    //Update 
-    oneTimeExp.item = item || oneTimeExp.item;
-    oneTimeExp.price = price || oneTimeExp.price;
+    //change the entered values, set db fields
+    user.taxPerYr = taxPerYr || user.taxPerYr;
+    user.conversionRate = conversionRate || user.conversionRate;
+    user.salaryPerYr = salaryPerYr || user.salaryPerYr;
     
     try {
-      await oneTimeTable.save(oneTimeExp);
+      await userTable.save(user);
       context.status(200);
       return {
         "success": true,
-        "message": "Record updated",
-        "data": {...oneTimeExp}
+        'message': 'Record updated successfully.',
+        "data": user
       }
     }catch(err) {
       context.status(500);

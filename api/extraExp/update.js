@@ -7,20 +7,20 @@ module.exports = async function (params, context) {
   //console.log(tokenUser);
   if(tokenUser != null) {
     //const { _id } = tokenUser;
-    const { _id, item, price } = params;
+    const { _id, item, price, type } = params;
 
-    if(!item || !price) {
+    if(!item || !price || !type) {
       context.status(400);
       return {
-        "success": true,
-        'message': 'Product Name, amount are mandatory'
+        "success": false,
+        'message': 'All fields are mandatory'
       }
     }
     
     const oneTimeTable = aircode.db.table('extraExp');    
     const oneTimeExp = await oneTimeTable
     .where({_id})
-    //.projection({accessToken : 0})
+    .projection({createdAt : 0, updatedAt:0, masterUsr_id:0})
     .findOne();
     
     //Update 
@@ -32,7 +32,8 @@ module.exports = async function (params, context) {
       context.status(200);
       return {
         "success": true,
-        ...oneTimeExp
+        'message': 'Record updated',
+        "data": {...oneTimeExp}
       }
     }catch(err) {
       context.status(500);

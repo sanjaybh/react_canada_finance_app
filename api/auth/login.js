@@ -6,52 +6,56 @@ require('dotenv').config;
 
 module.exports = async function (params, context) {
   const {email, password} = params;
-
+  
   if(!email || !password) {
     context.status(400);
-    return {"success": true,"message" : "All fields are mandatory"};
+    return {"success": false,"message" : "All fields are mandatory"};
   }
 
   const userTable = aircode.db.table('user');
 
   const user = await userTable
   .where({email})
+  .projection({createdAt:0, updatedAt:0})
   .findOne();
-
+  //console.log("CHECK - "+JSON.stringify(user) === '{}')
+  
   if(!user) {
     context.status(401);
-    return {"success": true,"message": "email or password is not valid"};
+    return {"success": false,"message": "User Not found"};
   }
 
   const matchPassword = await bcrypt.compare(password, user.password);
-
-  if(matchPassword) {
-    const accessToken = jwt.sign(
-      {
-        "_id": user._id,
-        "isAdmin": user.isAdmin
-      },
-      process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn : '1d'}
-    );
-
-    const currentUser = {...user, accessToken};
-    await userTable.save(currentUser);
-    context.status(200);
-    
-    //remove few fields from current user
-    delete currentUser._id;
-    delete currentUser.isAdmin;
-    delete currentUser.password;
-    delete currentUser.createdAt;
-    delete currentUser.updatedAt;
-    
-    return {
-      "success": true,
-      "data" : currentUser
+  try {
+    if(matchPassword) {
+      const accessToken = jwt.sign(
+        {
+          "_id": user._id,
+          "isAdmin": user.isAdmin
+        },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn : '1d'}
+      );
+  
+      const currentUser = {...user, accessToken};
+      await userTable.save(currentUser);
+      context.status(200);
+      
+      //remove few fields from current user
+      delete currentUser._id;
+      delete currentUser.password;
+      
+      return {
+        "success": true,
+        "data" : currentUser
+      }
+    }else {
+      context.status(401);
+      return {"success": false, "message": "Authentication failed, password mismatch"};
     }
-  }else {
+  }catch(e){
     context.status(401);
-    return {"success": false, "message": "email or password is not valid"};
+    return {"success": false, "message": "User not authorized"};
   }
+  
 };

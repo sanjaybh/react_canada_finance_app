@@ -5,16 +5,15 @@ const bcrypt = require('bcrypt');
 require('dotenv').config;
 const { verifyToken } = require('../helper/verifyToken');
 
-module.exports = async function (params, context) {
+module.exports = async function (params, context) {  
   const tokenUser = await verifyToken(context);
+  //console.log("tokenUser - "+tokenUser);
   
   if(tokenUser != null) {
     const { _id } = tokenUser;
-    const {roomRent, hydro, water, electricity, wifi, laundry} = params;
 
-    const masterUsr_id = _id;
-
-    if(!roomRent || !electricity) {
+    const {taxPerYr, conversionRate, salaryPerYr} = params;
+    if(!taxPerYr || !conversionRate || !salaryPerYr) {
       context.status(400);
       return {
         "success": false,
@@ -22,35 +21,26 @@ module.exports = async function (params, context) {
       }
     }
     
-    const userTable = aircode.db.table('rentExpenses');  
+    const userTable = aircode.db.table('userTax');
+    const masterUsr_id = _id;
     const userExist = await userTable
     .where({masterUsr_id})
+    .projection({createdAt:0, updatedAt:0})
     .findOne()
   
     if(userExist){
       context.status(409);
-      return {"success": false, "message": "Record already exist"}
+      return {"success": true,"message": "Record already exist"}
     }
-    const newUser = {masterUsr_id, roomRent, hydro, water, electricity, wifi, laundry };
+    const newUser = {taxPerYr, conversionRate, salaryPerYr, masterUsr_id };
     await userTable.save(newUser);
     
     context.status(200);
-
-    //Delete Item
-    delete newUser.masterUsr_id
-    
     return {
-      "success": true, 
-      "message": "Record added",
-      "data": newUser
+      "success": true,
+      "data": newUser,
+      "message": "Record added"
     };
-  }else {
-    context.status(401);
-    return {
-      "success": false,
-      'message': 'Token invalid or user is not authorized'
-    }
-  }
-  
+  }  
   
 };

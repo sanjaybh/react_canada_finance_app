@@ -9,7 +9,7 @@ module.exports = async function (params, context) {
     const { _id } = tokenUser;
     const {roomRent, hydro, water, electricity, wifi, laundry} = params;
     const masterUsr_id = _id;
-    
+       
     if(!roomRent || !electricity) {
       context.status(400);
       return {
@@ -19,11 +19,16 @@ module.exports = async function (params, context) {
     }
     
     const rentExpensesTable = aircode.db.table('rentExpenses');    
-    const userRentExp = await rentExpensesTable
+    let userRentExp = await rentExpensesTable
     .where({masterUsr_id})
-    //.projection({isAdmin: 0})
+    .projection({createdAt : 0, updatedAt : 0})
     .findOne();
 
+    if(userRentExp == null){
+      userRentExp = params
+      userRentExp.masterUsr_id = masterUsr_id
+    }
+    
     userRentExp.roomRent = roomRent || userRentExp.roomRent;
     userRentExp.hydro = hydro || userRentExp.hydro;
     userRentExp.water = water || userRentExp.water;
@@ -34,9 +39,12 @@ module.exports = async function (params, context) {
     try {
       await rentExpensesTable.save(userRentExp);
       context.status(200);
+
+      delete userRentExp.masterUsr_id
       return {
         "success": true,
-        ...userRentExp
+        "message": "Record Updated",
+        "data": {...userRentExp}
       }
     }catch(err) {
       context.status(500);

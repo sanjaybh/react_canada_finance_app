@@ -4,31 +4,31 @@ const { verifyToken } = require('../helper/verifyToken');
 
 module.exports = async function (params, context) {
   const tokenUser = await verifyToken(context);
-  
-  if(tokenUser != null) {  
+
+  if(tokenUser != null) { 
     const { _id } = tokenUser;
     
-    const oneTimeTable = aircode.db.table('oneTimeExp');
+    const userTaxTable = aircode.db.table('userTax');
     
-    const itemList = await oneTimeTable
+    const record = await userTaxTable
     .where({masterUsr_id: _id})
-    .projection({masterUsr_id:0, createdAt : 0, updatedAt:0})
-    .find();
-  
-    const count = await oneTimeTable
+    .projection({masterUsr_id:0, createdAt:0, updatedAt:0})
+    .findOne();
+    //console.log("Count - "+JSON.stringify(record))
+    
+    const count = await userTaxTable
     .where({masterUsr_id: _id})
     .count();
-
-    //Delete few items
-    //delete itemList.val
     
+    context.status(200);
     return {
       "success": true,
+      "message": "",
       "count": count,
-      "data": itemList
+      "data": record
     }
   } else {
     context.status(401);
-    return {"success": true, "message": "Token invalid or user is not authorized!"};
+    return {"success": false, "message": "Token invalid or user is not authorized!"};
   }
 };

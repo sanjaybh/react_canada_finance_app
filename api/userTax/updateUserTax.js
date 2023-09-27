@@ -7,22 +7,36 @@ module.exports = async function (params, context) {
   //console.log(tokenUser);
   if(tokenUser != null) {
     const { _id } = tokenUser;
-    const {name, email, password, phone, address} = params;
-        
-    const userTable = aircode.db.table('user');    
-    const user = await userTable
-    .where({_id})
-    .projection({isAdmin: 0, email:0, password:0, accessToken : 0, createdAt:0, updatedAt:0})
+    const {taxPerYr, conversionRate, salaryPerYr} = params;
+
+    if(!taxPerYr || !conversionRate || !salaryPerYr) {
+      context.status(400);
+      return {
+        "success": false,
+        "message": "All fields are mandatory"
+      }
+    }
+    
+    const userTable = aircode.db.table('userTax');    
+    let user = await userTable
+    .where({"masterUsr_id":_id})
+    .projection({createdAt:0, updatedAt:0})
     .findOne();
     
-    //email should not be allowed to change, make it readonly from UI
-    user.name = name || user.name;
-    user.phone = phone || user.phone;
-    user.address = address || user.address;
-    
+    if(user === null){
+      user = params
+      user.masterUsr_id = _id
+    }
+    //change the entered values, set db fields
+    user.taxPerYr = taxPerYr || user.taxPerYr;
+    user.conversionRate = conversionRate || user.conversionRate;
+    user.salaryPerYr = salaryPerYr || user.salaryPerYr;
+
+    //console.log("3 - "+JSON.stringify(user))
     try {
       await userTable.save(user);
       context.status(200);
+      delete user.masterUsr_id 
       return {
         "success": true,
         'message': 'Record updated successfully.',
