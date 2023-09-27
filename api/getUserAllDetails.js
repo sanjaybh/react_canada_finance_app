@@ -22,17 +22,17 @@ module.exports = async function (params, context) {
 
   const userRentExp = await aircode.db.table('rentExpenses')
     .where({masterUsr_id: _id})
-    .projection({ masterUsr_id:0, createdAt:0, updatedAt:0 })
+    .projection({ masterUsr_id:0, accessToken:0, createdAt:0, updatedAt:0 })
     .find()
 
   const userTaxExp = await aircode.db.table('userTax')
     .where({masterUsr_id: _id})
-    .projection({ masterUsr_id:0, createdAt:0, updatedAt:0 })
+    .projection({ masterUsr_id:0, accessToken:0, createdAt:0, updatedAt:0 })
     .find()
 
   const extraExp = await aircode.db.table('extraExp')
     .where({masterUsr_id: _id})
-    .projection({ masterUsr_id:0, createdAt:0, updatedAt:0 })
+    .projection({ masterUsr_id:0, accessToken:0, createdAt:0, updatedAt:0 })
     .find()
   
   // const userIdsList = await findIdsFromUserList(includeResult).then((data) => {    
