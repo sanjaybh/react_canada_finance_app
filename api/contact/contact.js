@@ -14,7 +14,10 @@ module.exports = async function (params, context) {
 
   try {
     const dbTable = aircode.db.table('contact');    
+    params["read"] = false
+    
     await dbTable.save(params);
+    
     context.status(200);
     return {
       "success": true,
